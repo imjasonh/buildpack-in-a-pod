@@ -1,8 +1,8 @@
-# Buildpacks in a Pod
+# Buildpack in a Pod
 
-This demonstrates running CNCF Buildpacks in a regular Kubernetes Pod.
+This demonstrates running [CNCF Buildpacks](https://buildpacks.io) in a regular Kubernetes Pod.
 
-This is effectively what Tekton, Shipwright, kpack and others do, without all that ornamentation and friendliness.
+This is effectively what [Tekton](https://tekton.dev), [Shipwright](https://shipwright.io), [kpack](https://github.com/pivotal/kpack/) and others do, without all that ornamentation and friendliness.
 
 1. Set up registry credentials
 
@@ -12,7 +12,7 @@ kubectl create secret generic regcred \
     --type=kubernetes.io/dockerconfigjson
 ```
 
-Note: in order to work, credentials for the cluster you want to push to must be basic username/password auth.
+**Note:** Registry credentials must be basic username/password credentials.
 Credential helpers are not supported.
 
 2. Run the build
