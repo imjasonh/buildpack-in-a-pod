@@ -1,0 +1,58 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  generateName: buildpacks-
+spec:
+  restartPolicy: Never
+  volumes:
+  - name: workspace
+    emptyDir: {}
+  - name: regcred
+    secret:
+      secretName: regcred
+
+  initContainers:
+  - name: fetch-source
+    image: alpine/git
+    command: ['ash']
+    args:
+    - -c
+    - |
+      # TODO: template
+      git clone --depth=1 https://github.com/googlecloudplatform/buildpack-samples /workspace
+    volumeMounts:
+    - name: workspace
+      mountPath: /workspace
+
+  containers:
+  - name: build-and-push
+    image: gcr.io/buildpacks/builder:v1  # TODO: template
+    command: ['bash']
+    volumeMounts:
+    - name: workspace
+      mountPath: /workspace
+    - name: regcred
+      mountPath: /regcred
+    args:
+    - -c
+    - |
+      set -e
+
+      # TODO: template
+      RUN_IMAGE="gcr.io/buildpacks/gcp/run:v1"
+      APP_IMAGE="gcr.io/imjasonh/built"
+      SUBDIR="sample-go"
+
+      cp /regcred/.dockerconfigjson ./config.json
+      DOCKER_CONFIG=$(pwd)
+
+      /cnb/lifecycle/creator \
+        -app=/workspace/${SUBDIR} \
+        -layers=/layers \
+        -platform=/platform \
+        -report=/layers/report.toml \
+        -process-type=web \
+        -run-image=${RUN_IMAGE} \
+        ${APP_IMAGE}
+
+      cat /layers/report.toml | grep "digest" | cut -d'"' -f2 | cut -d'"' -f2 | tr -d '\n' | tee /dev/termination-log
