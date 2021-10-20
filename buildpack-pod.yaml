@@ -40,11 +40,11 @@ spec:
 
       # TODO: template
       RUN_IMAGE="gcr.io/buildpacks/gcp/run:v1"
-      APP_IMAGE="gcr.io/imjasonh/built"
+      APP_IMAGE="quay.io/imjasonh/built"
       SUBDIR="sample-go"
 
       cp /regcred/.dockerconfigjson ./config.json
-      DOCKER_CONFIG=$(pwd)
+      export DOCKER_CONFIG=$(pwd)
 
       /cnb/lifecycle/creator \
         -app=/workspace/${SUBDIR} \

@@ -12,6 +12,9 @@ kubectl create secret generic regcred \
     --type=kubernetes.io/dockerconfigjson
 ```
 
+Note: in order to work, credentials for the cluster you want to push to must be basic username/password auth.
+Credential helpers are not supported.
+
 2. Run the build
 
 ```
@@ -29,5 +32,5 @@ kubectl logs buildpacks-a1db2 -f
 4. See the built image digest
 
 ```
-kubectl get pod buildpacks-a1db2 -ojsonpath="{.status.containerStatuses[0].terminationMessage}"
+kubectl get pod buildpacks-a1db2 -ojsonpath="{.status.containerStatuses[0].state.terminated.message}"
 ```
